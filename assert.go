@@ -88,8 +88,8 @@ func NoErr(t *testing.T, e error) {
 
 // Equal ensures that the actual value returned from a test was equal to an
 // expected. it uses reflect.DeepEqual to do so.
-// name is the name used to describe the values being compared.
-// it's used in the error string if actual != expected.
+// name is used to describe the values being compared. it's used in the error
+// string if actual != expected.
 func Equal(t *testing.T, actual, expected interface{}, noun string) {
 	if !reflect.DeepEqual(actual, expected) {
 		t.Errorf(callerStrf(1, "actual %s [%+v] != expected %s [%+v]", noun, actual, noun, expected))
