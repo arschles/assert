@@ -46,17 +46,20 @@ func False(t *testing.T, b bool, fmtStr string, vals ...interface{}) {
 }
 
 // Nil uses reflect.DeepEqual(i, nil) to determine if i is nil.
-// if it's not, Nil calls t.Errorf(fmtStr, vals...)
-func Nil(t *testing.T, i interface{}, fmtStr string, vals ...interface{}) {
+// if it's not, Nil calls t.Errorf explaining that the noun i is nil when it
+// should have been
+func Nil(t *testing.T, i interface{}, noun string) {
 	if !reflect.DeepEqual(i, nil) {
-		t.Errorf(callerStrf(1, fmtStr, vals...))
+		t.Errorf(callerStrf(1, "the given %s [%+v] was not nil when it should have been", noun, i))
 	}
 }
 
-// NoErr calls t.Errorf if e is not nil.
-func NoErr(t *testing.T, e error) {
-	if e != nil {
-		t.Errorf(callerStrf(1, "expected no error but got %s", e))
+// NotNil uses reflect.DeepEqual(i, nil) to determine if i is nil.
+// if it is, NotNil calls t.Errorf explaining that the noun i is not nil when
+// it shouldn't have been.
+func NotNil(t *testing.T, i interface{}, noun string) {
+	if reflect.DeepEqual(i, nil) {
+		t.Errorf(callerStrf(1, "the given %s was nil when it shouldn't have been", noun))
 	}
 }
 
