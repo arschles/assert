@@ -55,8 +55,8 @@ func Nil(t *testing.T, i interface{}, noun string) {
 }
 
 // NotNil uses reflect.DeepEqual(i, nil) to determine if i is nil.
-// if it is, NotNil calls t.Errorf explaining that the noun i is not nil when
-// it shouldn't have been.
+// if it is, NotNil calls t.Errorf explaining that the noun i is nil when it
+// shouldn't have been.
 func NotNil(t *testing.T, i interface{}, noun string) {
 	if reflect.DeepEqual(i, nil) {
 		t.Errorf(callerStrf(1, "the given %s was nil when it shouldn't have been", noun))
