@@ -45,9 +45,9 @@ func False(t *testing.T, b bool, fmtStr string, vals ...interface{}) {
 	}
 }
 
-// Nil uses reflect.DeepEqual(i, nil) to determine if i is nil.
-// if it's not, Nil calls t.Errorf explaining that the noun i is nil when it
-// should have been
+// Nil uses reflect.DeepEqual(i, nil) to determine if i is nil. if it's not,
+// Nil calls t.Errorf explaining that the noun i is not nil when it should have
+// been
 func Nil(t *testing.T, i interface{}, noun string) {
 	if !reflect.DeepEqual(i, nil) {
 		t.Errorf(callerStrf(1, "the given %s [%+v] was not nil when it should have been", noun, i))
