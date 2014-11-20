@@ -3,9 +3,9 @@
 // Go tests. Example usage:
 //	func TestSomething(t *testing.T) {
 //		i, err := doSomething()
-//    assert.NoErr(err)
-//    assert.Equal(i, 123, "returned integer")
-//  }
+//		assert.NoErr(err)
+//		assert.Equal(i, 123, "returned integer")
+//	}
 package assert
 
 import (
