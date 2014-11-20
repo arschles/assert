@@ -30,29 +30,30 @@ func callerStrf(numFrames int, fmtStr string, vals ...interface{}) string {
 	return fmt.Sprintf("%s: %s", callerStr(1+numFrames), origStr)
 }
 
-// True calls t.Errorf if the provided bool is false, does nothing
-// otherwise
+// True fails the test if b is false. on failure, it calls
+// t.Errorf(fmtStr, vals...)
 func True(t *testing.T, b bool, fmtStr string, vals ...interface{}) {
 	if !b {
 		t.Errorf(callerStrf(1, fmtStr, vals...))
 	}
 }
 
-// False is the equivalent of True(t, !b, fmtStr, vals...)
+// False is the equivalent of True(t, !b, fmtStr, vals...).
 func False(t *testing.T, b bool, fmtStr string, vals ...interface{}) {
 	if b {
 		t.Errorf(callerStrf(1, fmtStr, vals...))
 	}
 }
 
-// Nil calls t.Errorf if i is not nil
+// Nil uses reflect.DeepEqual(i, nil) to determine if i is nil.
+// if it's not, Nil calls t.Errorf(fmtStr, vals...)
 func Nil(t *testing.T, i interface{}, fmtStr string, vals ...interface{}) {
 	if !reflect.DeepEqual(i, nil) {
 		t.Errorf(callerStrf(1, fmtStr, vals...))
 	}
 }
 
-// NoErr calls t.Errorf if e is not nil
+// NoErr calls t.Errorf if e is not nil.
 func NoErr(t *testing.T, e error) {
 	if e != nil {
 		t.Errorf(callerStrf(1, "expected no error but got %s", e))
@@ -69,7 +70,7 @@ func Err(t *testing.T, expected error, actual error) {
 // Equal ensures that the actual value returned from a test was equal to an
 // expected. it uses reflect.DeepEqual to do so.
 // name is the name used to describe the values being compared.
-// it's used in the error string if actual != expected
+// it's used in the error string if actual != expected.
 func Equal(t *testing.T, actual, expected interface{}, noun string) {
 	if !reflect.DeepEqual(actual, expected) {
 		t.Errorf(callerStrf(1, "actual %s [%+v] != expected %s [%+v]", noun, actual, noun, expected))
