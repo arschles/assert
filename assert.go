@@ -71,6 +71,21 @@ func Err(t *testing.T, expected error, actual error) {
 	}
 }
 
+// if err == nil, ExistsErr calls t.Errorf explaining that the error described by noun was
+// nil when it shouldn't have been
+func ExistsErr(t *testing.T, err error, noun string) {
+	if err == nil {
+		t.Errorf(callerStrf(1, "given error for %s was nil when it shouldn't have been", noun))
+	}
+}
+
+// NoErr calls t.Errorf if e is not nil.
+func NoErr(t *testing.T, e error) {
+	if e != nil {
+		t.Errorf(callerStrf(1, "expected no error but got %s", e))
+	}
+}
+
 // Equal ensures that the actual value returned from a test was equal to an
 // expected. it uses reflect.DeepEqual to do so.
 // name is the name used to describe the values being compared.
