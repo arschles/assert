@@ -60,9 +60,10 @@ func NoErr(t *testing.T, e error) {
 	}
 }
 
-// Err calls t.Errorf if expected is not equal to actual
+// Err calls t.Errorf if expected is not equal to actual.
+// it uses reflect.DeepEqual to determine if the errors are equal
 func Err(t *testing.T, expected error, actual error) {
-	if expected != actual {
+	if !reflect.DeepEqual(expected, actual) {
 		t.Errorf(callerStrf(1, "expected error %s but got %s", expected, actual))
 	}
 }
