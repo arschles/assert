@@ -47,7 +47,7 @@ func False(t *testing.T, b bool, fmtStr string, vals ...interface{}) {
 
 // Nil calls t.Errorf if i is not nil
 func Nil(t *testing.T, i interface{}, fmtStr string, vals ...interface{}) {
-	if i != nil {
+	if !reflect.DeepEqual(i, nil) {
 		t.Errorf(callerStrf(1, fmtStr, vals...))
 	}
 }
