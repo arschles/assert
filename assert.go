@@ -22,7 +22,7 @@ func callerStr(numFrames int) string {
 	return fmt.Sprintf("%s:%d", file, line)
 }
 
-// callerStrErrorf calls t.Errorf with fmtStr and vals in it, prefixed
+// callerStrf returns a string with fmtStr and vals in it, prefixed
 // by a callerStr representation of the code numFrames above the caller of
 // this function
 func callerStrf(numFrames int, fmtStr string, vals ...interface{}) string {
@@ -31,58 +31,58 @@ func callerStrf(numFrames int, fmtStr string, vals ...interface{}) string {
 }
 
 // True fails the test if b is false. on failure, it calls
-// t.Errorf(fmtStr, vals...)
+// t.Fatalf(fmtStr, vals...)
 func True(t *testing.T, b bool, fmtStr string, vals ...interface{}) {
 	if !b {
-		t.Errorf(callerStrf(1, fmtStr, vals...))
+		t.Fatalf(callerStrf(1, fmtStr, vals...))
 	}
 }
 
 // False is the equivalent of True(t, !b, fmtStr, vals...).
 func False(t *testing.T, b bool, fmtStr string, vals ...interface{}) {
 	if b {
-		t.Errorf(callerStrf(1, fmtStr, vals...))
+		t.Fatalf(callerStrf(1, fmtStr, vals...))
 	}
 }
 
 // Nil uses reflect.DeepEqual(i, nil) to determine if i is nil. if it's not,
-// Nil calls t.Errorf explaining that the noun i is not nil when it should have
+// Nil calls t.Fatalf explaining that the noun i is not nil when it should have
 // been
 func Nil(t *testing.T, i interface{}, noun string) {
 	if !reflect.DeepEqual(i, nil) {
-		t.Errorf(callerStrf(1, "the given %s [%+v] was not nil when it should have been", noun, i))
+		t.Fatalf(callerStrf(1, "the given %s [%+v] was not nil when it should have been", noun, i))
 	}
 }
 
 // NotNil uses reflect.DeepEqual(i, nil) to determine if i is nil.
-// if it is, NotNil calls t.Errorf explaining that the noun i is nil when it
+// if it is, NotNil calls t.Fatalf explaining that the noun i is nil when it
 // shouldn't have been.
 func NotNil(t *testing.T, i interface{}, noun string) {
 	if reflect.DeepEqual(i, nil) {
-		t.Errorf(callerStrf(1, "the given %s was nil when it shouldn't have been", noun))
+		t.Fatalf(callerStrf(1, "the given %s was nil when it shouldn't have been", noun))
 	}
 }
 
-// Err calls t.Errorf if expected is not equal to actual.
+// Err calls t.Fatalf if expected is not equal to actual.
 // it uses reflect.DeepEqual to determine if the errors are equal
 func Err(t *testing.T, expected error, actual error) {
 	if !reflect.DeepEqual(expected, actual) {
-		t.Errorf(callerStrf(1, "expected error %s but got %s", expected, actual))
+		t.Fatalf(callerStrf(1, "expected error %s but got %s", expected, actual))
 	}
 }
 
-// if err == nil, ExistsErr calls t.Errorf explaining that the error described by noun was
+// if err == nil, ExistsErr calls t.Fatalf explaining that the error described by noun was
 // nil when it shouldn't have been
 func ExistsErr(t *testing.T, err error, noun string) {
 	if err == nil {
-		t.Errorf(callerStrf(1, "given error for %s was nil when it shouldn't have been", noun))
+		t.Fatalf(callerStrf(1, "given error for %s was nil when it shouldn't have been", noun))
 	}
 }
 
-// NoErr calls t.Errorf if e is not nil.
+// NoErr calls t.Fatalf if e is not nil.
 func NoErr(t *testing.T, e error) {
 	if e != nil {
-		t.Errorf(callerStrf(1, "expected no error but got %s", e))
+		t.Fatalf(callerStrf(1, "expected no error but got %s", e))
 	}
 }
 
@@ -92,6 +92,6 @@ func NoErr(t *testing.T, e error) {
 // string if actual != expected.
 func Equal(t *testing.T, actual, expected interface{}, noun string) {
 	if !reflect.DeepEqual(actual, expected) {
-		t.Errorf(callerStrf(1, "actual %s [%+v] != expected %s [%+v]", noun, actual, noun, expected))
+		t.Fatalf(callerStrf(1, "actual %s [%+v] != expected %s [%+v]", noun, actual, noun, expected))
 	}
 }
