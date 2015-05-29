@@ -1,4 +1,4 @@
-// package assert provides convenience assert methods to complement
+// Package assert provides convenience assert methods to complement
 // the built in go testing library. It's intended to add onto standard
 // Go tests. Example usage:
 //	func TestSomething(t *testing.T) {
@@ -10,9 +10,9 @@ package assert
 
 import (
 	"fmt"
+	"reflect"
 	"runtime"
 	"testing"
-	"reflect"
 )
 
 // callerStr returns a string representation of the code numFrames stack
@@ -71,8 +71,8 @@ func Err(t *testing.T, expected error, actual error) {
 	}
 }
 
-// if err == nil, ExistsErr calls t.Fatalf explaining that the error described by noun was
-// nil when it shouldn't have been
+// ExistsErr calls t.Fatalf if err == nil. The message will explain that the error
+// described by noun was nil when it shouldn't have been
 func ExistsErr(t *testing.T, err error, noun string) {
 	if err == nil {
 		t.Fatalf(callerStrf(1, "given error for %s was nil when it shouldn't have been", noun))
