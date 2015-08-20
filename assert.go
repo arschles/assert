@@ -45,11 +45,27 @@ func False(t *testing.T, b bool, fmtStr string, vals ...interface{}) {
 	}
 }
 
+// isNil checks if a specified object is nil or not, without Failing.
+// copied from https://github.com/stretchr/testify/blob/master/assert/assertions.go#L310-L323
+func isNil(object interface{}) bool {
+	if object == nil {
+		return true
+	}
+
+	value := reflect.ValueOf(object)
+	kind := value.Kind()
+	if kind >= reflect.Chan && kind <= reflect.Slice && value.IsNil() {
+		return true
+	}
+
+	return false
+}
+
 // Nil uses reflect.DeepEqual(i, nil) to determine if i is nil. if it's not,
 // Nil calls t.Fatalf explaining that the noun i is not nil when it should have
 // been
 func Nil(t *testing.T, i interface{}, noun string) {
-	if !reflect.DeepEqual(i, nil) {
+	if !isNil(i) {
 		t.Fatalf(callerStrf(1, "the given %s [%+v] was not nil when it should have been", noun, i))
 	}
 }
@@ -58,7 +74,7 @@ func Nil(t *testing.T, i interface{}, noun string) {
 // if it is, NotNil calls t.Fatalf explaining that the noun i is nil when it
 // shouldn't have been.
 func NotNil(t *testing.T, i interface{}, noun string) {
-	if reflect.DeepEqual(i, nil) {
+	if isNil(i) {
 		t.Fatalf(callerStrf(1, "the given %s was nil when it shouldn't have been", noun))
 	}
 }
