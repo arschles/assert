@@ -12,8 +12,11 @@ import (
 	"fmt"
 	"reflect"
 	"runtime"
-	"testing"
 )
+
+type Tester interface {
+	Fatalf(string, ...interface{})
+}
 
 // callerStr returns a string representation of the code numFrames stack
 // frames above the code that called callerStr
@@ -32,14 +35,14 @@ func callerStrf(numFrames int, fmtStr string, vals ...interface{}) string {
 
 // True fails the test if b is false. on failure, it calls
 // t.Fatalf(fmtStr, vals...)
-func True(t *testing.T, b bool, fmtStr string, vals ...interface{}) {
+func True(t Tester, b bool, fmtStr string, vals ...interface{}) {
 	if !b {
 		t.Fatalf(callerStrf(1, fmtStr, vals...))
 	}
 }
 
 // False is the equivalent of True(t, !b, fmtStr, vals...).
-func False(t *testing.T, b bool, fmtStr string, vals ...interface{}) {
+func False(t Tester, b bool, fmtStr string, vals ...interface{}) {
 	if b {
 		t.Fatalf(callerStrf(1, fmtStr, vals...))
 	}
@@ -64,7 +67,7 @@ func isNil(object interface{}) bool {
 // Nil uses reflect.DeepEqual(i, nil) to determine if i is nil. if it's not,
 // Nil calls t.Fatalf explaining that the noun i is not nil when it should have
 // been
-func Nil(t *testing.T, i interface{}, noun string) {
+func Nil(t Tester, i interface{}, noun string) {
 	if !isNil(i) {
 		t.Fatalf(callerStrf(1, "the given %s [%+v] was not nil when it should have been", noun, i))
 	}
@@ -73,7 +76,7 @@ func Nil(t *testing.T, i interface{}, noun string) {
 // NotNil uses reflect.DeepEqual(i, nil) to determine if i is nil.
 // if it is, NotNil calls t.Fatalf explaining that the noun i is nil when it
 // shouldn't have been.
-func NotNil(t *testing.T, i interface{}, noun string) {
+func NotNil(t Tester, i interface{}, noun string) {
 	if isNil(i) {
 		t.Fatalf(callerStrf(1, "the given %s was nil when it shouldn't have been", noun))
 	}
@@ -81,7 +84,7 @@ func NotNil(t *testing.T, i interface{}, noun string) {
 
 // Err calls t.Fatalf if expected is not equal to actual.
 // it uses reflect.DeepEqual to determine if the errors are equal
-func Err(t *testing.T, expected error, actual error) {
+func Err(t Tester, expected error, actual error) {
 	if !reflect.DeepEqual(expected, actual) {
 		t.Fatalf(callerStrf(1, "expected error %s but got %s", expected, actual))
 	}
@@ -89,14 +92,14 @@ func Err(t *testing.T, expected error, actual error) {
 
 // ExistsErr calls t.Fatalf if err == nil. The message will explain that the error
 // described by noun was nil when it shouldn't have been
-func ExistsErr(t *testing.T, err error, noun string) {
+func ExistsErr(t Tester, err error, noun string) {
 	if err == nil {
 		t.Fatalf(callerStrf(1, "given error for %s was nil when it shouldn't have been", noun))
 	}
 }
 
 // NoErr calls t.Fatalf if e is not nil.
-func NoErr(t *testing.T, e error) {
+func NoErr(t Tester, e error) {
 	if e != nil {
 		t.Fatalf(callerStrf(1, "expected no error but got %s", e))
 	}
@@ -106,7 +109,7 @@ func NoErr(t *testing.T, e error) {
 // expected. it uses reflect.DeepEqual to do so.
 // name is used to describe the values being compared. it's used in the error
 // string if actual != expected.
-func Equal(t *testing.T, actual, expected interface{}, noun string) {
+func Equal(t Tester, actual, expected interface{}, noun string) {
 	if !reflect.DeepEqual(actual, expected) {
 		t.Fatalf(callerStrf(1, "actual %s [%+v] != expected %s [%+v]", noun, actual, noun, expected))
 	}
