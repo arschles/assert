@@ -40,14 +40,31 @@ func TestCallerStrf(t *testing.T) {
 }
 
 func TestTrue(t *testing.T) {
-	True(t, true, "true wasn't reported as true")
+	rt := newRecordingTester()
+	True(rt, true, "true wasn't reported as true")
+	if n := rt.fatalsLen(); n != 0 {
+		t.Fatalf("no fatals expected, got [%d] instead", n)
+	}
+	True(rt, false, "false was reported as true")
+	if n := rt.fatalsLen(); n != 1 {
+		t.Fatalf("one fatal expected, got [%d] instead", n)
+	}
 }
 
 func TestFalse(t *testing.T) {
-	False(t, false, "false wasn't reported as false")
+	rt := newRecordingTester()
+	False(rt, false, "false wasn't reported as false")
+	if n := rt.fatalsLen(); n != 0 {
+		t.Fatalf("no fatals expected, got [%d] instead", n)
+	}
+	False(rt, true, "true wasn't reported as true")
+	if n := rt.fatalsLen(); n != 1 {
+		t.Fatalf("1 fatal expected, got [%d] instead", n)
+	}
 }
 
 func TestNil(t *testing.T) {
+	rt := newRecordingTester()
 	var i *int = nil
 	var b *bool = nil
 	var s *string = nil
@@ -61,36 +78,70 @@ func TestNil(t *testing.T) {
 		testCase{val: slc, name: "*[]string"},
 		testCase{val: str, name: "*struct{}"},
 	}
-	for _, test := range tests {
-		Nil(t, test.val, test.name)
+	for i, test := range tests {
+		Nil(rt, test.val, test.name)
+		if n := rt.fatalsLen(); n != 0 {
+			t.Fatalf("expected 0 fatals, got [%d] instead (iter [%d])", n, i)
+		}
 	}
 }
 
 func TestNotNil(t *testing.T) {
-	for _, test := range nonNilTestCases {
-		NotNil(t, test.val, test.name)
+	rt := newRecordingTester()
+	for i, test := range nonNilTestCases {
+		NotNil(rt, test.val, test.name)
+		if n := rt.fatalsLen(); n != 0 {
+			t.Fatalf("expected 0 fatals, got [%d] instead (iter [%d])", n, i)
+		}
 	}
 }
 
 func TestErr(t *testing.T) {
+	rt := newRecordingTester()
 	err11 := errors.New("err1")
 	err12 := errors.New("err1")
-	Err(t, err11, err12)
+	Err(rt, err11, err12)
+	if n := rt.fatalsLen(); n != 0 {
+		t.Fatalf("expected 0 fatals, got [%d] instead", n)
+	}
 	err21 := fmt.Errorf("err2-%s", "a")
 	err22 := fmt.Errorf("err2-%s", "a")
-	Err(t, err21, err22)
+	Err(rt, err21, err22)
+	if n := rt.fatalsLen(); n != 0 {
+		t.Fatalf("expected 0 fatals, got [%d] instead", n)
+	}
 }
 
 func TestExistsErr(t *testing.T) {
-	ExistsErr(t, errors.New("abc"), "error")
+	rt := newRecordingTester()
+	ExistsErr(rt, errors.New("abc"), "error")
+	if n := rt.fatalsLen(); n != 0 {
+		t.Fatalf("expected 0 fatals, got [%d] instead", n)
+	}
+	ExistsErr(rt, nil, "error")
+	if n := rt.fatalsLen(); n != 1 {
+		t.Fatalf("expected 1 fatal, got [%d] instead", n)
+	}
 }
 
 func TestNoErr(t *testing.T) {
-	NoErr(t, nil)
+	rt := newRecordingTester()
+	NoErr(rt, nil)
+	if n := rt.fatalsLen(); n != 0 {
+		t.Fatalf("expected 0 fatals, got [%d] instead", n)
+	}
+	NoErr(rt, errors.New("err"))
+	if n := rt.fatalsLen(); n != 1 {
+		t.Fatalf("expected 1 fatal, got [%d] instead", n)
+	}
 }
 
 func TestEqual(t *testing.T) {
-	for _, test := range nonNilTestCases {
-		Equal(t, test.val, test.val, test.name)
+	rt := newRecordingTester()
+	for i, test := range nonNilTestCases {
+		Equal(rt, test.val, test.val, test.name)
+		if n := rt.fatalsLen(); n != 0 {
+			t.Fatalf("expected 0 fatals, got [%d] instead (iter [%d])", n, i)
+		}
 	}
 }
