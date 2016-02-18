@@ -3,7 +3,7 @@
 // Go tests. Example usage:
 //	func TestSomething(t *testing.T) {
 //		i, err := doSomething()
-//		assert.NoErr(err)
+//		assert.NoErr(t, err)
 //		assert.Equal(t, i, 123, "returned integer")
 //	}
 package assert
