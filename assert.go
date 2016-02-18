@@ -4,7 +4,7 @@
 //	func TestSomething(t *testing.T) {
 //		i, err := doSomething()
 //		assert.NoErr(err)
-//		assert.Equal(i, 123, "returned integer")
+//		assert.Equal(t, i, 123, "returned integer")
 //	}
 package assert
 
