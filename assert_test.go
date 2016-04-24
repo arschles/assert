@@ -11,6 +11,36 @@ type testCase struct {
 	name string
 }
 
+type testCase1Equaler struct {
+	a int
+}
+
+func (t testCase1Equaler) Equal(e Equaler) bool {
+	switch tpe := e.(type) {
+	case testCase1Equaler:
+		return tpe.a == t.a
+	case testCase2Equaler:
+		return tpe.a == t.a
+	default:
+		return false
+	}
+}
+
+type testCase2Equaler struct {
+	a int
+}
+
+func (t testCase2Equaler) Equal(e Equaler) bool {
+	switch tpe := e.(type) {
+	case testCase1Equaler:
+		return tpe.a == t.a
+	case testCase2Equaler:
+		return tpe.a == t.a
+	default:
+		return false
+	}
+}
+
 var (
 	nonNilTestCases = []testCase{
 		testCase{val: 0, name: "0"},
@@ -65,11 +95,11 @@ func TestFalse(t *testing.T) {
 
 func TestNil(t *testing.T) {
 	rt := newRecordingTester()
-	var i *int = nil
-	var b *bool = nil
-	var s *string = nil
-	var slc *[]string = nil
-	var str *struct{} = nil
+	var i *int
+	var b *bool
+	var s *string
+	var slc *[]string
+	var str *struct{}
 	tests := []testCase{
 		testCase{val: nil, name: "nil"},
 		testCase{val: i, name: "*int"},
@@ -137,11 +167,35 @@ func TestNoErr(t *testing.T) {
 }
 
 func TestEqual(t *testing.T) {
-	rt := newRecordingTester()
 	for i, test := range nonNilTestCases {
+		rt := newRecordingTester()
 		Equal(rt, test.val, test.val, test.name)
 		if n := rt.fatalsLen(); n != 0 {
 			t.Fatalf("expected 0 fatals, got [%d] instead (iter [%d])", n, i)
 		}
+	}
+
+	rt := newRecordingTester()
+	Equal(rt, testCase1Equaler{a: 1}, testCase1Equaler{a: 1}, "testCase1Equaler")
+	if n := rt.fatalsLen(); n != 0 {
+		t.Fatalf("expected 0 fatals, got [%d] instead", n)
+	}
+
+	rt = newRecordingTester()
+	Equal(rt, testCase1Equaler{a: 1}, testCase1Equaler{a: 2}, "testCase1Equaler")
+	if n := rt.fatalsLen(); n != 1 {
+		t.Fatalf("expected 1 fatals, got [%d] instead", n)
+	}
+
+	rt = newRecordingTester()
+	Equal(rt, testCase1Equaler{a: 1}, testCase2Equaler{a: 1}, "testCase1Equaler/testCase2Equaler")
+	if n := rt.fatalsLen(); n != 0 {
+		t.Fatalf("expected 0 fatals, got [%d] instead", n)
+	}
+
+	rt = newRecordingTester()
+	Equal(rt, testCase1Equaler{a: 1}, testCase2Equaler{a: 2}, "testCase1Equaler/testCase2Equaler")
+	if n := rt.fatalsLen(); n != 1 {
+		t.Fatalf("expected 1 fatal, got [%d] instead", n)
 	}
 }

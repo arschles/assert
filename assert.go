@@ -14,6 +14,15 @@ import (
 	"runtime"
 )
 
+// Tester is a stub interface that *testing.T conforms to. It is used in all
+// exported function calls in this assert library so that the library can be
+// tested, or a caller can use a custom testing library. As said before,
+// however, the most widely used implementation of this interface will
+// be *testing.T. Example usage:
+//
+//	func TestSomething(t *testing.T) {
+//		assert.Equal(t, "something", "something", "something")
+//	}
 type Tester interface {
 	Fatalf(string, ...interface{})
 }
@@ -110,7 +119,15 @@ func NoErr(t Tester, e error) {
 // name is used to describe the values being compared. it's used in the error
 // string if actual != expected.
 func Equal(t Tester, actual, expected interface{}, noun string) {
-	if !reflect.DeepEqual(actual, expected) {
+	actualEqualer, actualEqualerOK := actual.(Equaler)
+	expectedEqualer, expectedEqualerOK := expected.(Equaler)
+	equals := false
+	if actualEqualerOK && expectedEqualerOK {
+		equals = actualEqualer.Equal(expectedEqualer)
+	} else {
+		equals = reflect.DeepEqual(actual, expected)
+	}
+	if !equals {
 		t.Fatalf(callerStrf(1, "actual %s [%+v] != expected %s [%+v]", noun, actual, noun, expected))
 	}
 }
