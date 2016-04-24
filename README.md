@@ -1,5 +1,6 @@
 # assert
 
+[![Build Status](https://travis-ci.org/arschles/assert.svg?branch=master)](https://travis-ci.org/arschles/assert)
 [![GoDoc](https://godoc.org/github.com/arschles/assert?status.svg)](https://godoc.org/github.com/arschles/assert)
 
 `assert` is [Go](http://golang.org/) package that provides convenience methods
