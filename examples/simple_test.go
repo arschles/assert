@@ -30,7 +30,7 @@ func TestEqual(t *testing.T) {
 
 func TestErrors(t *testing.T) {
 	err1 := errors.New("this is an error")
-	var err2 error = nil
+	var err2 error
 	assert.Err(t, err1, errors.New("this is an error"))
 	assert.NoErr(t, err2)
 	assert.ExistsErr(t, err1, "valid error")
