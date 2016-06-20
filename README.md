@@ -12,8 +12,8 @@ You can write this test with `assert`:
 ```go
 func TestSomething(t *testing.T) {
   i, err := doSomething()
-  assert.NoErr(err)
-  assert.Equal(i, 123, "returned integer")
+  assert.NoErr(t, err)
+  assert.Equal(t, i, 123, "returned integer")
 }
 ```
 
