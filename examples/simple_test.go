@@ -35,3 +35,15 @@ func TestErrors(t *testing.T) {
 	assert.NoErr(t, err2)
 	assert.ExistsErr(t, err1, "valid error")
 }
+
+func TestWithCustomAssertion(t *testing.T) {
+	assertCustom(t, "foobar", "foobar")
+}
+
+func assertCustom(t *testing.T, s1, s2 string) {
+	// When creating custom assertions, use assert.WithFrameWrapper to wrap t. Pass the wrapped t
+	// to other assertions. This helps the assert library rewind the callstack to the appropriate
+	// point when displaying the source of a failed assertion.
+	wt := assert.WithFrameWrapper(t)
+	assert.Equal(wt, s1, s2, "sample string")
+}
